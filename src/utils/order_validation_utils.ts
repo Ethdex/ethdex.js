@@ -111,10 +111,6 @@ export class OrderValidationUtils {
             const makerZRXAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
                 zrxTokenAddress, signedOrder.maker);
 
-                console.log(signedOrder);
-                console.log(makerZRXBalance);
-                console.log(makerZRXAllowance);
-
             if (signedOrder.makerFee.greaterThan(makerZRXBalance)) {
                 throw new Error(ExchangeContractErrs.InsufficientMakerFeeBalance);
             }
