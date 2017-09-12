@@ -48,7 +48,7 @@ export interface ExchangeContract extends Web3.ContractInstance {
     LogFill: CreateContractEvent;
     LogCancel: CreateContractEvent;
     LogError: CreateContractEvent;
-    ZRX_TOKEN_CONTRACT: {
+    WETH_TOKEN_CONTRACT: {
         callAsync: () => Promise<string>;
     };
     getUnavailableTakerTokenAmount: {
@@ -195,6 +195,7 @@ export interface TokenTransferProxyContract extends Web3.ContractInstance {
 export enum SolidityTypes {
     Address = 'address',
     Uint256 = 'uint256',
+    Bytes   = 'bytes',
 }
 
 export enum ExchangeContractErrCodes {
@@ -288,19 +289,24 @@ export type ContractEventArg = string|BigNumber.BigNumber;
 export interface Order {
     maker: string;
     taker: string;
-    makerFee: BigNumber.BigNumber;
-    takerFee: BigNumber.BigNumber;
     makerTokenAmount: BigNumber.BigNumber;
     takerTokenAmount: BigNumber.BigNumber;
     makerTokenAddress: string;
     takerTokenAddress: string;
     salt: BigNumber.BigNumber;
     exchangeContractAddress: string;
-    feeRecipient: string;
     expirationUnixTimestampSec: BigNumber.BigNumber;
 }
 
 export interface SignedOrder extends Order {
+    ecSignature: ECSignature;
+}
+
+export interface SignedRelayOrder {
+    orderHash: string;
+    feeRecipient: string;
+    makerFee: BigNumber.BigNumber;
+    takerFee: BigNumber.BigNumber;
     ecSignature: ECSignature;
 }
 

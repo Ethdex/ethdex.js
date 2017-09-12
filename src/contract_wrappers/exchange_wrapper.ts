@@ -14,6 +14,7 @@ import {
     Order,
     OrderFillOrKillRequest,
     SignedOrder,
+    SignedRelayOrder,
     ContractEvent,
     ExchangeEvents,
     ContractEventEmitter,
@@ -143,7 +144,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * If false, the smart contract will not throw if the parties
      * do not have sufficient balances/allowances, preserving gas costs. Setting it to true forgoes this check
      * and causes the smart contract to throw (using all the gas supplied) instead.
-     * @param   signedOrder                                 An object that conforms to the SignedOrder interface.
+     * @param   signedOrder                                 An object that conforms to the SignedRelayOrder interface.
      * @param   fillTakerTokenAmount                        The amount of the order (in taker tokens baseUnits) that
      *                                                      you wish to fill.
      * @param   shouldThrowOnInsufficientBalanceOrAllowance Whether or not you wish for the contract call to throw
@@ -154,7 +155,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     @decorators.contractCallErrorHandler
-    public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber.BigNumber,
+    public async fillOrderAsync(signedOrder: SignedRelayOrder, fillTakerTokenAmount: BigNumber.BigNumber,
                                 shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                 takerAddress: string): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
@@ -211,7 +212,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     @decorators.contractCallErrorHandler
-    public async fillOrdersUpToAsync(signedOrders: SignedOrder[], fillTakerTokenAmount: BigNumber.BigNumber,
+    public async fillOrdersUpToAsync(signedOrders: SignedRelayOrder[], fillTakerTokenAmount: BigNumber.BigNumber,
                                      shouldThrowOnInsufficientBalanceOrAllowance: boolean,
                                      takerAddress: string): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
@@ -357,7 +358,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
      * the fill order is abandoned.
-     * @param   signedOrder             An object that conforms to the SignedOrder interface. The
+     * @param   signedOrder             An object that conforms to the SignedRelayOrder interface. The
      *                                  signedOrder you wish to fill.
      * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
@@ -365,7 +366,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return Transaction hash.
      */
     @decorators.contractCallErrorHandler
-    public async fillOrKillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber.BigNumber,
+    public async fillOrKillOrderAsync(signedOrder: SignedRelayOrder, fillTakerTokenAmount: BigNumber.BigNumber,
                                       takerAddress: string): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isBigNumber('fillTakerTokenAmount', fillTakerTokenAmount);
@@ -472,14 +473,14 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Cancel a given fill amount of an order. Cancellations are cumulative.
-     * @param   order                   An object that conforms to the Order or SignedOrder interface.
+     * @param   order                   An object that conforms to the Order or SignedRelayOrder interface.
      *                                  The order you would like to cancel.
      * @param   cancelTakerTokenAmount  The amount (specified in taker tokens) that you would like to cancel.
      * @return                          Transaction hash.
      */
     @decorators.contractCallErrorHandler
     public async cancelOrderAsync(
-        order: Order|SignedOrder, cancelTakerTokenAmount: BigNumber.BigNumber): Promise<string> {
+        order: Order|SignedRelayOrder, cancelTakerTokenAmount: BigNumber.BigNumber): Promise<string> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isBigNumber('takerTokenCancelAmount', cancelTakerTokenAmount);
         await assert.isSenderAddressAsync('order.maker', order.maker, this._web3Wrapper);
@@ -623,13 +624,13 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Checks if order fill will succeed and throws an error otherwise.
-     * @param   signedOrder             An object that conforms to the SignedOrder interface. The
+     * @param   signedOrder             An object that conforms to the SignedRelayOrder interface. The
      *                                  signedOrder you wish to fill.
      * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
-    public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
+    public async validateFillOrderThrowIfInvalidAsync(signedOrder: SignedRelayOrder,
                                                       fillTakerTokenAmount: BigNumber.BigNumber,
                                                       takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
@@ -641,7 +642,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Checks if cancelling a given order will succeed and throws an informative error if it won't.
-     * @param   order                   An object that conforms to the Order or SignedOrder interface.
+     * @param   order                   An object that conforms to the Order or SignedRelayOrder interface.
      *                                  The order you would like to cancel.
      * @param   cancelTakerTokenAmount  The amount (specified in taker tokens) that you would like to cancel.
      */
@@ -656,13 +657,13 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Checks if calling fillOrKill on a given order will succeed and throws an informative error if it won't.
-     * @param   signedOrder             An object that conforms to the SignedOrder interface. The
+     * @param   signedOrder             An object that conforms to the SignedRelayOrder interface. The
      *                                  signedOrder you wish to fill.
      * @param   fillTakerTokenAmount    The total amount of the takerTokens you would like to fill.
      * @param   takerAddress            The user Ethereum address who would like to fill this order.
      *                                  Must be available via the supplied Web3.Provider passed to 0x.js.
      */
-    public async validateFillOrKillOrderThrowIfInvalidAsync(signedOrder: SignedOrder,
+    public async validateFillOrKillOrderThrowIfInvalidAsync(signedOrder: SignedRelayOrder,
                                                             fillTakerTokenAmount: BigNumber.BigNumber,
                                                             takerAddress: string): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
@@ -727,7 +728,7 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         return isValidSignature;
     }
-    private async _getOrderHashHexUsingContractCallAsync(order: Order|SignedOrder): Promise<string> {
+    private async _getOrderHashHexUsingContractCallAsync(order: Order|SignedRelayOrder): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
         const [orderAddresses, orderValues] = ExchangeWrapper._getOrderAddressesAndValues(order);
         const orderHashHex = await exchangeInstance.getOrderHash.callAsync(orderAddresses, orderValues);
@@ -745,7 +746,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     private async _getZRXTokenAddressAsync(): Promise<string> {
         const exchangeInstance = await this._getExchangeContractAsync();
-        const ZRXtokenAddress = await exchangeInstance.ZRX_TOKEN_CONTRACT.callAsync();
+        const ZRXtokenAddress = await exchangeInstance.WETH_TOKEN_CONTRACT.callAsync();
         return ZRXtokenAddress;
     }
 }

@@ -1,5 +1,5 @@
 import {ExchangeContractErrs, SignedOrder, Order, ZeroExError} from '../types';
-import {ZeroEx} from '../0x';
+import {ZeroEx} from '../ethdex';
 import {TokenWrapper} from '../contract_wrappers/token_wrapper';
 import {ExchangeWrapper} from '../contract_wrappers/exchange_wrapper';
 import {utils} from '../utils/utils';
@@ -20,7 +20,8 @@ export class OrderValidationUtils {
             throw new Error(ExchangeContractErrs.OrderFillAmountZero);
         }
         const orderHash = utils.getOrderHashHex(signedOrder);
-        if (!ZeroEx.isValidSignature(orderHash, signedOrder.ecSignature, signedOrder.maker)) {
+        const orderSignedHash = utils.getOrderSignedHashHex(signedOrder);
+        if (!ZeroEx.isValidSignature(orderSignedHash, signedOrder.ecSignature, signedOrder.maker)) {
             throw new Error(ZeroExError.InvalidSignature);
         }
         const unavailableTakerTokenAmount = await this.exchangeWrapper.getUnavailableTakerAmountAsync(orderHash);
@@ -109,6 +110,10 @@ export class OrderValidationUtils {
             const makerZRXBalance = await this.tokenWrapper.getBalanceAsync(zrxTokenAddress, signedOrder.maker);
             const makerZRXAllowance = await this.tokenWrapper.getProxyAllowanceAsync(
                 zrxTokenAddress, signedOrder.maker);
+
+                console.log(signedOrder);
+                console.log(makerZRXBalance);
+                console.log(makerZRXAllowance);
 
             if (signedOrder.makerFee.greaterThan(makerZRXBalance)) {
                 throw new Error(ExchangeContractErrs.InsufficientMakerFeeBalance);

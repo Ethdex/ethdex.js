@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import {Token, ZeroExError} from '../../src';
 
-const PROTOCOL_TOKEN_SYMBOL = 'ZRX';
+const PROTOCOL_TOKEN_SYMBOL = 'WETH';
 
 export class TokenUtils {
     private tokens: Token[];
@@ -9,11 +9,11 @@ export class TokenUtils {
         this.tokens = tokens;
     }
     public getProtocolTokenOrThrow(): Token {
-        const zrxToken = _.find(this.tokens, {symbol: PROTOCOL_TOKEN_SYMBOL});
-        if (_.isUndefined(zrxToken)) {
+        const wethToken = _.find(this.tokens, {symbol: PROTOCOL_TOKEN_SYMBOL});
+        if (_.isUndefined(wethToken)) {
             throw new Error(ZeroExError.ZrxNotInTokenRegistry);
         }
-        return zrxToken;
+        return wethToken;
     }
     public getNonProtocolTokens(): Token[] {
         const nonProtocolTokens = _.filter(this.tokens, token => {

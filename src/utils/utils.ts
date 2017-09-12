@@ -28,18 +28,31 @@ export const utils = {
     spawnSwitchErr(name: string, value: any): Error {
         return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
     },
-    getOrderHashHex(order: Order|SignedOrder): string {
+    getOrderSignedHashHex(order: Order|SignedOrder|SignedRelayOrder): string {
+        const orderParts = [
+            {value: ethUtil.toBuffer(this.getOrderHashHex(order)), type: SolidityTypes.Bytes},
+            {value: order.feeRecipient, type: SolidityTypes.Address},
+            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.Uint256},
+            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.Uint256},
+        ]
+        const types = _.map(orderParts, o => o.type);
+        const values = _.map(orderParts, o => o.value);
+        const hashBuff = ethABI.soliditySHA3(types, values);
+        const hashHex = ethUtil.bufferToHex(hashBuff);
+        return hashHex;
+    },
+    getOrderHashHex(order: Order|SignedOrder|SignedRelayOrder): string {
         const orderParts = [
             {value: order.exchangeContractAddress, type: SolidityTypes.Address},
             {value: order.maker, type: SolidityTypes.Address},
             {value: order.taker, type: SolidityTypes.Address},
             {value: order.makerTokenAddress, type: SolidityTypes.Address},
             {value: order.takerTokenAddress, type: SolidityTypes.Address},
-            {value: order.feeRecipient, type: SolidityTypes.Address},
+            //{value: order.feeRecipient, type: SolidityTypes.Address},
             {value: utils.bigNumberToBN(order.makerTokenAmount), type: SolidityTypes.Uint256},
             {value: utils.bigNumberToBN(order.takerTokenAmount), type: SolidityTypes.Uint256},
-            {value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.Uint256},
-            {value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.Uint256},
+            //{value: utils.bigNumberToBN(order.makerFee), type: SolidityTypes.Uint256},
+            //{value: utils.bigNumberToBN(order.takerFee), type: SolidityTypes.Uint256},
             {value: utils.bigNumberToBN(order.expirationUnixTimestampSec), type: SolidityTypes.Uint256},
             {value: utils.bigNumberToBN(order.salt), type: SolidityTypes.Uint256},
         ];

@@ -198,7 +198,7 @@ describe('ExchangeWrapper', () => {
                     expect(await zeroEx.token.getBalanceAsync(takerTokenAddress, takerAddress))
                         .to.be.bignumber.equal(fillableAmount.minus(partialFillAmount));
                 });
-                it('should fill the valid orders with fees', async () => {
+                it.only('should fill the valid orders with fees', async () => {
                     const makerFee = new BigNumber(1);
                     const takerFee = new BigNumber(2);
                     const signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(

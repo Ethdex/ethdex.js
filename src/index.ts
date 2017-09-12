@@ -1,4 +1,6 @@
-export {ZeroEx} from './0x';
+export {ZeroEx} from './ethdex';
+export {Ethdex} from './ethdex';
+export {ZeroExOld} from './0x';
 
 export {
     Order,

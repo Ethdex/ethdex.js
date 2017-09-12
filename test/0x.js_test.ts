@@ -4,7 +4,7 @@ import {chaiSetup} from './utils/chai_setup';
 import 'mocha';
 import * as BigNumber from 'bignumber.js';
 import * as Sinon from 'sinon';
-import {ZeroEx, Order} from '../src';
+import {ZeroEx, Order, ZeroExOld} from '../src';
 import {constants} from './utils/constants';
 import {TokenUtils} from './utils/token_utils';
 import {web3Factory} from './utils/web3_factory';
@@ -18,6 +18,7 @@ const expect = chai.expect;
 describe('ZeroEx library', () => {
     const web3 = web3Factory.create();
     const zeroEx = new ZeroEx(web3.currentProvider);
+    const zeroExOld = new ZeroExOld(web3.currentProvider);
     describe('#setProvider', () => {
         it('overrides provider in nested web3s and invalidates contractInstances', async () => {
             // Instantiate the contract instances with the current provider
@@ -128,9 +129,9 @@ describe('ZeroEx library', () => {
         });
     });
     describe('#getOrderHashHex', () => {
-        const expectedOrderHash = '0x39da987067a3c9e5f1617694f1301326ba8c8b0498ebef5df4863bed394e3c83';
+        const expectedOrderHash = '0xe55881b4210614ab906b8b39ff0e1eae4d0946825318f1d36284454254a24955';
         const fakeExchangeContractAddress = '0xb69e673309512a9d726f87304c6984054f87a93b';
-        const order: Order = {
+        const order: SignedRelayOrder = {
             maker: constants.NULL_ADDRESS,
             taker: constants.NULL_ADDRESS,
             feeRecipient: constants.NULL_ADDRESS,

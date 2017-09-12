@@ -35,7 +35,8 @@ export const orderFactory = {
             expirationUnixTimestampSec,
         };
         const orderHash = ZeroEx.getOrderHashHex(order);
-        const ecSignature = await zeroEx.signOrderHashAsync(orderHash, maker);
+        const orderSignedHash = ZeroEx.getOrderSignedHashHex(order);
+        const ecSignature = await zeroEx.signOrderHashAsync(orderSignedHash, maker);
         const signedOrder: SignedOrder = _.assign(order, {ecSignature});
         return signedOrder;
     },
