@@ -77,8 +77,8 @@ export class FillScenarios {
             this.increaseBalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount),
         ]);
         await Promise.all([
-            this.increaseBalanceAndAllowanceAsync(this.zrxTokenAddress, makerAddress, makerFee),
-            this.increaseBalanceAndAllowanceAsync(this.zrxTokenAddress, takerAddress, takerFee),
+            this.increaseWETHBalanceAndAllowanceAsync(this.zrxTokenAddress, makerAddress, makerFee),
+            this.increaseWETHBalanceAndAllowanceAsync(this.zrxTokenAddress, takerAddress, takerFee),
         ]);
 
         const signedOrder = await orderFactory.createSignedOrderAsync(this.zeroEx,
@@ -87,6 +87,22 @@ export class FillScenarios {
             this.exchangeContractAddress, feeRecepient, expirationUnixTimestampSec);
         return signedOrder;
     }
+
+    private async increaseWETHBalanceAndAllowanceAsync(
+        tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
+        if (amount.isZero()) {
+            return; // noop
+        }
+        const depositWeiAmount = (this.zeroEx as any)._web3Wrapper.toWei(amount);
+
+        const txHash = await this.zeroEx.etherToken.depositAsync(depositWeiAmount, address);
+        await this.zeroEx.awaitTransactionMinedAsync(txHash);
+        await this.increaseAllowanceAsync(tokenAddress, address, amount);
+
+        const postETHBalanceInWei = await (this.zeroEx as any)._web3Wrapper.getBalanceInWeiAsync(address);
+        const postWETHBalanceInBaseUnits = await this.zeroEx.token.getBalanceAsync(tokenAddress, address);
+    }
+
     private async increaseBalanceAndAllowanceAsync(
         tokenAddress: string, address: string, amount: BigNumber.BigNumber): Promise<void> {
         if (amount.isZero()) {

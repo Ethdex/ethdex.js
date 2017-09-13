@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import {Token, ZeroExError} from '../../src';
 
-const PROTOCOL_TOKEN_SYMBOL = 'ZRX';
+const PROTOCOL_TOKEN_SYMBOL = 'WETH';
 
 export class TokenUtils {
     private tokens: Token[];
