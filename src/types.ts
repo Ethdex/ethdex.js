@@ -296,6 +296,8 @@ export interface Order {
     salt: BigNumber.BigNumber;
     exchangeContractAddress: string;
     expirationUnixTimestampSec: BigNumber.BigNumber;
+    makerFee: BigNumber.BigNumber;
+    takerFee: BigNumber.BigNumber;
 }
 
 export interface SignedOrder extends Order {
@@ -305,8 +307,6 @@ export interface SignedOrder extends Order {
 export interface SignedRelayOrder {
     orderHash: string;
     feeRecipient: string;
-    makerFee: BigNumber.BigNumber;
-    takerFee: BigNumber.BigNumber;
     ecSignature: ECSignature;
 }
 
